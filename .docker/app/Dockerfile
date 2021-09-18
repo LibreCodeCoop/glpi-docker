@@ -1,4 +1,16 @@
-FROM php:8-fpm
+ARG version_php
+ARG version_xdebug
+ARG version_node
+ARG version_glpi
+
+FROM php:${version_php}-fpm
+ARG version_xdebug
+ARG version_node
+ARG version_glpi
+
+ENV VERSION_XDEBUG=${version_xdebug}
+ENV VERSION_NODE=${version_node}
+ENV VERSION_GLPI=${version_glpi}
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -36,25 +48,24 @@ RUN docker-php-ext-configure gd --with-freetype=/usr/include/ \
         xml \
         # xmlrpc /\
         zip \
-    && pecl install apcu && docker-php-ext-enable apcu
+    && pecl install apcu \
+    && docker-php-ext-enable apcu
 
-ENV GLPI_VERSION 9.5.3
-
-RUN git clone --progress -b "${GLPI_VERSION}" --single-branch --depth 1 https://github.com/glpi-project/glpi.git /usr/src/glpi
+RUN git clone --progress -b "${VERSION_GLPI}" --single-branch --depth 1 https://github.com/glpi-project/glpi.git /usr/src/glpi
 
 ENV NVM_DIR=/opt/nvm
 RUN git clone https://github.com/nvm-sh/nvm.git $NVM_DIR
 RUN cd $NVM_DIR && \
     git checkout `git describe --abbrev=0 --tags --match "v[0-9]*" $(git rev-list --tags --max-count=1)` && \
     . $NVM_DIR/nvm.sh && \
-    nvm install 13 && \
+    nvm install ${VERSION_NODE} && \
     nvm use node
 RUN echo "source ${NVM_DIR}/nvm.sh" > $HOME/.bashrc
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# RUN pecl install xdebug-3.0.2 \
-#     && docker-php-ext-enable xdebug
+RUN pecl install xdebug-${VERSION_XDEBUG} \
+    && docker-php-ext-enable xdebug
 
 VOLUME /var/www/html
 WORKDIR /var/www/html

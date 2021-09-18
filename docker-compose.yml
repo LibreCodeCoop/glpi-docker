@@ -2,20 +2,28 @@ version: "3.7"
 
 services:
   app:
-    build: .docker/app
+    build:
+      context: .docker/app
+      args:
+        version_php: ${VERSION_PHP}
+        version_xdebug: ${VERSION_XDEBUG}
+        version_node: ${VERSION_NODE}
+        version_glpi: ${VERSION_GLPI}
     volumes:
       - ./volumes/glpi:/var/www/html
       - ./.docker/app/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
+    env_file:
+      - .env
     environment:
       - TZ
       - GLPI_VERSION
-      # - XDEBUG_CONFIG=client_host=172.17.0.1 client_port=9000 start_with_request=yes
+      - XDEBUG_CONFIG
   web:
     build: .docker/web
     volumes:
       - ./volumes/glpi:/var/www/html
     ports:
-      - 80:80
+      - ${PORT_WEB}:80
   mysql:
     image: mariadb
     volumes:
@@ -23,7 +31,7 @@ services:
       - ./volumes/mysql/dump:/docker-entrypoint-initdb.d
       - ./volumes/mysql/data:/var/lib/mysql
     ports:
-      - 3306:3306
+      - ${PORT_MYSQL}:3306
     environment:
       - TZ
       - MYSQL_ROOT_PASSWORD
