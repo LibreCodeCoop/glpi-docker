@@ -28,7 +28,7 @@ if version_greater "$image_version" "$installed_version"; then
     else
         rsync_options="-rlD"
     fi
-    rsync $rsync_options --delete --exclude-from=/usr/src/glpi-scripts/upgrade.exclude /usr/src/glpi/ /var/www/html/
+    rsync $rsync_options /usr/src/glpi/ /var/www/html/
     echo "Initializing finished"
 
     #install
@@ -47,6 +47,8 @@ if version_greater "$image_version" "$installed_version"; then
     printf "Yes\n" | php bin/console db:install --db-host=$MYSQL_HOST --db-name=$MYSQL_DATABASE --db-user=$MYSQL_USER --db-password=$MYSQL_PASSWORD --quiet
     # fix permissions after install database
     bash -c 'chown -R www-data:www-data /var/www/html/{config,files,marketplace}'
+
+    php bin/console glpi:system:status
 fi
 
 exec "$@"
