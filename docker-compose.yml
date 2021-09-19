@@ -21,6 +21,10 @@ services:
       - GLPI_VERSION
       - XDEBUG_CONFIG
       - EXTRA_COMMANDS
+      - MYSQL_HOST
+      - MYSQL_DATABASE
+      - MYSQL_USER
+      - MYSQL_PASSWORD
   web:
     build: .docker/web
     volumes:
