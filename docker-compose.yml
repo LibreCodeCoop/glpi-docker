@@ -11,6 +11,8 @@ services:
         version_glpi: ${VERSION_GLPI}
     volumes:
       - ./volumes/glpi:/var/www/html
+      - ~/.composer:/root/.composer/
+      - ~/.npm:/root/.npm/
       - ./.docker/app/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
     env_file:
       - .env
