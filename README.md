@@ -1,3 +1,5 @@
+![logo](https://raw.githubusercontent.com/glpi-project/glpi/master/pics/logos/logo-GLPI-250-black.png)
+
 # GLPI in Docker
 Run GLPI in a Docker
 
