@@ -36,5 +36,8 @@ services:
       - ${PORT_MYSQL}:3306
     environment:
       - TZ
+      - MYSQL_HOST
       - MYSQL_ROOT_PASSWORD
       - MYSQL_DATABASE
+      - MYSQL_USER
+      - MYSQL_PASSWORD

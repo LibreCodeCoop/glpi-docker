@@ -1,4 +1,4 @@
-#!/bin/bash -eu
+#!/bin/bash
 . $NVM_DIR/nvm.sh
 
 installed_version="0.0.0"
@@ -34,11 +34,19 @@ if version_greater "$image_version" "$installed_version"; then
     #install
     echo "Starting dependencies installation"
     php bin/console dependencies install
+
     echo "Creating directories"
-    mkdir -p /var/www/html/files/{_cron,_dumps,_graphs,_log,_lock,_pictures,_plugins,_rss,_tmp,_uploads,_cache,_sessions,_locales}
-    mkdir -p /var/www/html/{config,marketplace}
-    chown -R www-data:www-data /var/www/html/files
-    chown -R www-data:www-data /var/www/html/{config,marketplace}
+    bash -c 'mkdir -pv /var/www/html/files/{_cron,_dumps,_graphs,_log,_lock,_pictures,_plugins,_rss,_tmp,_uploads,_cache,_sessions,_locales}'
+    bash -c 'mkdir -pv /var/www/html/{config,marketplace}'
+    bash -c 'chown -R www-data:www-data /var/www/html/{config,files,marketplace}'
+
+    echo "Check requirements"
+    php bin/console glpi:system:check_requirements
+
+    echo "Install database"
+    printf "Yes\n" | php bin/console db:install --db-host=$MYSQL_HOST --db-name=$MYSQL_DATABASE --db-user=$MYSQL_USER --db-password=$MYSQL_PASSWORD --quiet
+    # fix permissions after install database
+    bash -c 'chown -R www-data:www-data /var/www/html/{config,files,marketplace}'
 fi
 
 exec "$@"
