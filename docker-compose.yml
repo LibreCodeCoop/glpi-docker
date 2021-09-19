@@ -41,3 +41,15 @@ services:
       - MYSQL_DATABASE
       - MYSQL_USER
       - MYSQL_PASSWORD
+  cron:
+    build:
+      context: .docker/app
+      args:
+        version_php: ${VERSION_PHP}
+        version_xdebug: ${VERSION_XDEBUG}
+        version_node: ${VERSION_NODE}
+        version_glpi: ${VERSION_GLPI}
+    restart: unless-stopped
+    volumes:
+      - ./volumes/glpi:/var/www/html
+    entrypoint: /usr/src/glpi-scripts/cron.sh

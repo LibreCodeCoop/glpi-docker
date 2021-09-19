@@ -68,6 +68,13 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 RUN pecl install xdebug-${VERSION_XDEBUG} \
     && docker-php-ext-enable xdebug
 
+# Install cron dependencies
+RUN apt-get install -y --no-install-recommends \
+        cron \
+        busybox-static \
+    && mkdir -p /var/spool/cron/crontabs; \
+    && echo '*/5 * * * * php -f /var/www/html/glpi/front/cron.php' > /var/spool/cron/crontabs/www-data
+
 VOLUME /var/www/html
 WORKDIR /var/www/html
 
