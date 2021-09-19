@@ -13,6 +13,18 @@ Quick and simple installation of GLPI using docker-compose
 * Run command `docker-compose up`
 * Follow instructions to end setup in browser
 
+### Install plugins and run extra commands
+
+Fill the environment `EXTRA_COMMANDS` with the command you want run on the first execution.
+
+**Examples**:
+```bash
+EXTRA_COMMANDS="
+curl -L https://github.com/pluginsGLPI/formcreator/releases/download/v2.11.2/glpi-formcreator-2.11.2.tar.bz2 | tar -jxf - -C /var/www/html/plugins/
+curl -L https://github.com/LibreSign/libresign-glpi/archive/refs/tags/v1.0.0.tar.gz | tar -zxf - -C /var/www/html/plugins/
+"
+```
+
 ## Default accounts
 
 | account  | password | type              |

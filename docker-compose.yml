@@ -20,6 +20,7 @@ services:
       - TZ
       - GLPI_VERSION
       - XDEBUG_CONFIG
+      - EXTRA_COMMANDS
   web:
     build: .docker/web
     volumes:
