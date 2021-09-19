@@ -1,5 +1,5 @@
-#!/bin/sh
-set -eu
+#!/bin/bash -eu
+. $NVM_DIR/nvm.sh
 
 installed_version="0.0.0"
 if [ -e /var/www/html/inc/define.php ]; then
@@ -35,11 +35,5 @@ if version_greater "$image_version" "$installed_version"; then
     echo "Starting dependencies installation"
     php bin/console dependencies install
 fi
-
-# echo version_greater 
-# if [ ! -d vendor ]; then
-#     export COMPOSER_ALLOW_SUPERUSER=1
-#     composer install
-# fi
 
 exec "$@"
