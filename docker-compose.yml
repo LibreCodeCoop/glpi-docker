@@ -50,6 +50,8 @@ services:
         version_node: ${VERSION_NODE}
         version_glpi: ${VERSION_GLPI}
     restart: unless-stopped
+    environment:
+      - TZ
     volumes:
       - ./volumes/glpi:/var/www/html
     entrypoint: /usr/src/glpi-scripts/cron.sh
