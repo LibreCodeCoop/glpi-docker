@@ -46,10 +46,11 @@ RUN docker-php-ext-configure gd --with-freetype=/usr/include/ \
         pdo \
         pdo_mysql \
         xml \
-        # xmlrpc /\
         zip \
     && pecl install apcu \
-    && docker-php-ext-enable apcu
+    && docker-php-ext-enable apcu \
+    && pecl install xmlrpc-beta \
+    && docker-php-ext-enable xmlrpc
 
 RUN git clone --progress -b "${VERSION_GLPI}" --single-branch --depth 1 https://github.com/glpi-project/glpi.git /usr/src/glpi
 
