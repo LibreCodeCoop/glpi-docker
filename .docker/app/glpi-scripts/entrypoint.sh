@@ -34,6 +34,11 @@ if version_greater "$image_version" "$installed_version"; then
     #install
     echo "Starting dependencies installation"
     php bin/console dependencies install
+    echo "Creating directories"
+    mkdir -p /var/www/html/files/{_cron,_dumps,_graphs,_log,_lock,_pictures,_plugins,_rss,_tmp,_uploads,_cache,_sessions,_locales}
+    mkdir -p /var/www/html/{config,marketplace}
+    chown -R www-data:www-data /var/www/html/files
+    chown -R www-data:www-data /var/www/html/{config,marketplace}
 fi
 
 exec "$@"
