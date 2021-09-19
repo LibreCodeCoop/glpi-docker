@@ -1,4 +1,4 @@
-![logo](https://raw.githubusercontent.com/glpi-project/glpi/master/pics/logos/logo-GLPI-250-black.png)
+[![logo](https://raw.githubusercontent.com/glpi-project/glpi/master/pics/logos/logo-GLPI-250-black.png)](https://github.com/glpi-project/glpi)
 
 # GLPI in Docker
 Run GLPI in a Docker
