@@ -5,6 +5,6 @@ Run GLPI in a Docker
 
 * Clone this repository
 * Copy `.env.example` file to `.env`
-* Define a value to environment `GLPI_VERSION`
+* Define a value to environment `VERSION_GLPI`
 * Run command `docker-compose up`
 * Follow instructions to end setup in browser
