@@ -71,9 +71,9 @@ RUN pecl install xdebug-${VERSION_XDEBUG} \
 # Install cron dependencies
 RUN apt-get install -y --no-install-recommends \
         cron \
-        busybox-static \
-    && mkdir -p /var/spool/cron/crontabs; \
-    && echo '*/5 * * * * php -f /var/www/html/glpi/front/cron.php' > /var/spool/cron/crontabs/www-data
+        busybox-static; \
+    mkdir -p /var/spool/cron/crontabs; \
+    echo '*/5 * * * * php -f /var/www/html/front/cron.php' > /var/spool/cron/crontabs/www-data
 
 VOLUME /var/www/html
 WORKDIR /var/www/html
