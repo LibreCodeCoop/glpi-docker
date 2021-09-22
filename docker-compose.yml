@@ -16,6 +16,7 @@ services:
       - ./.docker/app/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
     env_file:
       - .env
+    restart: unless-stopped
     environment:
       - TZ
       - GLPI_VERSION
@@ -31,6 +32,7 @@ services:
       - ./volumes/glpi:/var/www/html
     ports:
       - ${PORT_WEB}:80
+    restart: unless-stopped
   mysql:
     image: mariadb
     volumes:
@@ -39,6 +41,7 @@ services:
       - ./volumes/mysql/data:/var/lib/mysql
     ports:
       - ${PORT_MYSQL}:3306
+    restart: unless-stopped
     environment:
       - TZ
       - MYSQL_HOST
