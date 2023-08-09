@@ -1,40 +1,45 @@
-version: "3.7"
-
 services:
   app:
-    build:
-      context: .docker/app
-      args:
-        version_php: ${VERSION_PHP}
-        version_xdebug: ${VERSION_XDEBUG}
-        version_node: ${VERSION_NODE}
-        version_glpi: ${VERSION_GLPI}
+    image: lyseontech/glpi:app-${VERSION_GLPI}
+    # build:
+    #   context: .docker/app
+    #   args:
+    #     version_php: ${VERSION_PHP}
+    #     version_glpi: ${VERSION_GLPI}
     volumes:
-      - ./volumes/glpi:/var/www/html
+      - ./volumes/glpi:/var/www/glpi
+      - ./volumes/var:${GLPI_VAR_DIR}
+      - ./volumes/config:${GLPI_CONFIG_DIR}
       - ~/.composer:/root/.composer/
       - ~/.npm:/root/.npm/
-      - ./.docker/app/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
     env_file:
       - .env
     restart: unless-stopped
     environment:
       - TZ
+      - HOST_UID=${HOST_UID:-1000}
+      - HOST_GID=${HOST_GID:-1000}
       - GLPI_VERSION
-      - XDEBUG_CONFIG
+      - GLPI_VAR_DIR
+      - GLPI_CONFIG_DIR
       - EXTRA_COMMANDS
       - MYSQL_HOST
       - MYSQL_DATABASE
       - MYSQL_USER
       - MYSQL_PASSWORD
+      - XDEBUG_CONFIG
+    extra_hosts:
+      - host.docker.internal:host-gateway
   web:
-    build: .docker/web
+    image: lyseontech/glpi:nginx-${VERSION_GLPI}
+    # build: .docker/web
     volumes:
-      - ./volumes/glpi:/var/www/html
+      - ./volumes/glpi:/var/www/glpi
     ports:
       - ${PORT_WEB}:80
     restart: unless-stopped
   mysql:
-    image: mariadb
+    image: mariadb:11.0.2
     volumes:
       - ./.docker/mysql/conf:/etc/mysql/conf.d
       - ./volumes/mysql/dump:/docker-entrypoint-initdb.d
@@ -50,6 +55,7 @@ services:
       - MYSQL_USER
       - MYSQL_PASSWORD
   cron:
+    # image: lyseontech/glpi:app-${VERSION_GLPI}
     build:
       context: .docker/app
       args:
@@ -60,6 +66,14 @@ services:
     restart: unless-stopped
     environment:
       - TZ
+      - HOST_UID=${HOST_UID:-1000}
+      - HOST_GID=${HOST_GID:-1000}
+      - GLPI_VERSION
+      - EXTRA_COMMANDS
+      - MYSQL_HOST
+      - MYSQL_DATABASE
+      - MYSQL_USER
+      - MYSQL_PASSWORD
     volumes:
-      - ./volumes/glpi:/var/www/html
+      - ./volumes/glpi:/var/www/glpi
     entrypoint: /usr/src/glpi-scripts/cron.sh
