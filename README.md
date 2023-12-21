@@ -20,9 +20,9 @@ Fill the environment `EXTRA_COMMANDS` with the command you want run on the first
 **Examples**:
 ```bash
 EXTRA_COMMANDS="
-curl -L https://github.com/pluginsGLPI/formcreator/releases/download/v2.11.2/glpi-formcreator-2.11.2.tar.bz2 | tar -jxf - -C /var/www/html/plugins/;
-curl -L https://github.com/LibreSign/libresign-glpi/archive/refs/tags/v1.0.0.tar.gz | tar -zxf - -C /var/www/html/plugins/;
-mv /var/www/html/plugins/libresign-glpi-1.0.0 /var/www/html/plugins/libresign;
+curl -L https://github.com/pluginsGLPI/formcreator/releases/download/v2.11.2/glpi-formcreator-2.11.2.tar.bz2 | tar -jxf - -C /var/www/glpi/plugins/;
+curl -L https://github.com/LibreSign/libresign-glpi/archive/refs/tags/v1.0.0.tar.gz | tar -zxf - -C /var/www/glpi/plugins/;
+mv /var/www/html/plugins/libresign-glpi-1.0.0 /var/www/glpi/plugins;
 "
 ```
 
