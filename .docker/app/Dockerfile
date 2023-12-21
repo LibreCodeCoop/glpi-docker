@@ -50,6 +50,7 @@ WORKDIR /var/www/glpi
 
 COPY glpi-scripts /usr/src/glpi-scripts
 COPY config/* /usr/local/etc/php/conf.d/
+COPY config/www.conf /usr/local/etc/php/php-fpm.d/
 ENTRYPOINT ["sh", "/usr/src/glpi-scripts/entrypoint.sh"]
 
 CMD ["php-fpm"]
