@@ -28,6 +28,10 @@ version_greater() {
     [ "$(printf '%s\n' "$@" | sort -t '.' -n -k1,1 -k2,2 -k3,3 -k4,4 | head -n 1)" != "$1" ]
 }
 
+run_glpi_console() {
+    php bin/console --allow-superuser "$@"
+}
+
 if version_greater "$installed_version" "$image_version"; then
     echo "Can't start GLPI because the version of the data ($installed_version) is higher than the docker image version ($image_version) and downgrading is not supported. Are you sure you have pulled the newest image version?"
     exit 1
@@ -50,10 +54,10 @@ if version_greater "$image_version" "$installed_version"; then
 
     #install
     echo "🔧 Starting dependencies installation"
-    php bin/console dependencies install
+    run_glpi_console dependencies install
 
     echo "🌐 Compiling locales"
-    php bin/console locales:compile
+    run_glpi_console locales:compile
 
     echo "📁 Creating directories"
     bash -c 'mkdir -pv $GLPI_VAR_DIR/{_cron,_dumps,_graphs,_log,_lock,_pictures,_plugins,_rss,_tmp,_uploads,_cache,_sessions,_locales}'
@@ -62,10 +66,10 @@ if version_greater "$image_version" "$installed_version"; then
     bash -c 'chown -R www-data:www-data {/var/www/glpi,$GLPI_CONFIG_DIR,$GLPI_VAR_DIR}'
 
     echo "Check requirements"
-    php bin/console glpi:system:check_requirements
+    run_glpi_console glpi:system:check_requirements
 
     echo "📊 Install database"
-    printf "Yes\n" | php bin/console db:install --db-host=$MYSQL_HOST --db-name=$MYSQL_DATABASE --db-user=$MYSQL_USER --db-password=$MYSQL_PASSWORD
+    printf "Yes\n" | run_glpi_console db:install --db-host=$MYSQL_HOST --db-name=$MYSQL_DATABASE --db-user=$MYSQL_USER --db-password=$MYSQL_PASSWORD
     if [ -n "$EXTRA_COMMANDS" ]; then
         eval $EXTRA_COMMANDS
     fi
@@ -74,7 +78,7 @@ if version_greater "$image_version" "$installed_version"; then
     rm install/install.php
     bash -c 'chown -R www-data:www-data {/var/www/glpi,$GLPI_CONFIG_DIR,$GLPI_VAR_DIR}'
 
-    php bin/console glpi:system:status
+    run_glpi_console glpi:system:status
     echo "🥳 🏁 Setup completed !!!"
 fi
 
