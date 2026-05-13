@@ -4,12 +4,26 @@
 usermod --non-unique --uid "${HOST_UID}" www-data
 groupmod --non-unique --gid "${HOST_GID}" www-data
 
-installed_version="0.0.0"
-if [ -e /var/www/glpi/inc/define.php ]; then
-    installed_version=`grep -oP "define\('GLPI_VERSION', '\K((\d\.?)+)" /var/www/glpi/inc/define.php`
-fi
+resolve_glpi_version() {
+    local glpi_dir="$1"
+    local version=""
 
-image_version=`grep -oP "define\('GLPI_VERSION', '\K((\d\.?)+)" /usr/src/glpi/inc/define.php`
+    if [ -e "${glpi_dir}/inc/define.php" ]; then
+        version=$(grep -oP "define\('GLPI_VERSION', '\K((\d\.?)+)" "${glpi_dir}/inc/define.php" || true)
+    fi
+
+    if [ -z "$version" ] && [ -f "${glpi_dir}/bin/console" ]; then
+        version=$(cd "$glpi_dir" && php bin/console --no-interaction --no-ansi --version 2>/dev/null | grep -oP '\d+(\.\d+)+' || true)
+    fi
+
+    printf '%s\n' "$version"
+}
+
+installed_version="$(resolve_glpi_version /var/www/glpi)"
+installed_version="${installed_version:-0.0.0}"
+
+image_version="$(resolve_glpi_version /usr/src/glpi)"
+image_version="${image_version:-${VERSION_GLPI:-0.0.0}}"
 
 version_greater() {
     [ "$(printf '%s\n' "$@" | sort -t '.' -n -k1,1 -k2,2 -k3,3 -k4,4 | head -n 1)" != "$1" ]
