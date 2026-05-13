@@ -32,6 +32,14 @@ run_glpi_console() {
     php bin/console --allow-superuser "$@"
 }
 
+install_php_dependencies() {
+    COMPOSER_ALLOW_SUPERUSER=1 composer install \
+        --no-dev \
+        --prefer-dist \
+        --optimize-autoloader \
+        --no-interaction
+}
+
 if version_greater "$installed_version" "$image_version"; then
     echo "Can't start GLPI because the version of the data ($installed_version) is higher than the docker image version ($image_version) and downgrading is not supported. Are you sure you have pulled the newest image version?"
     exit 1
@@ -52,9 +60,8 @@ if version_greater "$image_version" "$installed_version"; then
     chown -R www-data:www-data /var/www/glpi/
     echo "Initializing finished"
 
-    #install
-    echo "🔧 Starting dependencies installation"
-    run_glpi_console dependencies install
+    echo "🔧 Installing PHP dependencies"
+    install_php_dependencies
 
     echo "🌐 Compiling locales"
     run_glpi_console locales:compile
