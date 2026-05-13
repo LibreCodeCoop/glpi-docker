@@ -1,7 +1,7 @@
 ARG version_php
 ARG version_glpi
 
-FROM php:${version_php}-fpm
+FROM php:${version_php}-fpm AS base
 ARG version_glpi
 
 ENV VERSION_GLPI=${version_glpi}
@@ -50,6 +50,11 @@ WORKDIR /var/www/glpi
 
 COPY glpi-scripts /usr/src/glpi-scripts
 COPY config/* /usr/local/etc/php/conf.d/
+
+FROM base AS cron
+ENTRYPOINT ["sh", "/usr/src/glpi-scripts/cron.sh"]
+
+FROM base AS app
 ENTRYPOINT ["sh", "/usr/src/glpi-scripts/entrypoint.sh"]
 
 CMD ["php-fpm"]
