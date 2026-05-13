@@ -1,0 +1,22 @@
+networks:
+  internal:
+    name: internal
+
+services:
+  mysql:
+    image: mariadb:11.0.2
+    volumes:
+      - ./.docker/mysql/conf:/etc/mysql/conf.d
+      - ./volumes/mysql/dump:/docker-entrypoint-initdb.d
+      - ./volumes/mysql/data:/var/lib/mysql
+    networks:
+      - internal
+    restart: unless-stopped
+    environment:
+      - TZ
+      - MYSQL_HOST
+      - MYSQL_ROOT_PASSWORD
+      - MYSQL_DATABASE
+      - MYSQL_USER
+      - MYSQL_PASSWORD
+
