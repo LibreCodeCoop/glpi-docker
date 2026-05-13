@@ -5,6 +5,9 @@ Run GLPI in a Docker
 
 Quick and simple installation of GLPI using docker-compose
 
+## Sign
+If you need to sign your tickets with LibreSign, take a look at this [plugin](https://github.com/LibreSign/libresign-glpi)
+
 ## Setup
 
 * Clone this repository
