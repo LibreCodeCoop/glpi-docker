@@ -1,6 +1,6 @@
 networks:
-  internal:
-    name: internal
+  internal-glpi:
+    name: internal-glpi
 
 services:
   app:
@@ -28,21 +28,21 @@ services:
     extra_hosts:
       - host.docker.internal:host-gateway
     networks: 
-      - internal
+      - internal-glpi
 
   web:
     image: ghcr.io/librecodecoop/glpi-web:${VERSION_GLPI}
     volumes:
       - ./volumes/glpi:/var/www/glpi
     networks:
-      - internal
+      - internal-glpi
     restart: unless-stopped
 
   cron:
     image: ghcr.io/librecodecoop/glpi-cron:${VERSION_GLPI}
     restart: unless-stopped
     networks:
-      - internal
+      - internal-glpi
     environment:
       - TZ
       - HOST_UID=${HOST_UID:-1000}
