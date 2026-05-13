@@ -22,8 +22,7 @@ resolve_glpi_version() {
 installed_version="$(resolve_glpi_version /var/www/glpi)"
 installed_version="${installed_version:-0.0.0}"
 
-image_version="$(resolve_glpi_version /usr/src/glpi)"
-image_version="${image_version:-${VERSION_GLPI:-0.0.0}}"
+image_version="${VERSION_GLPI:-0.0.0}"
 
 version_greater() {
     [ "$(printf '%s\n' "$@" | sort -t '.' -n -k1,1 -k2,2 -k3,3 -k4,4 | head -n 1)" != "$1" ]
@@ -49,12 +48,12 @@ if version_greater "$image_version" "$installed_version"; then
     chown -R www-data:www-data /var/www/glpi/
     echo "Initializing finished"
 
-    echo "🌐 Compiling locales"
-    php bin/console locales:compile
-
     #install
     echo "🔧 Starting dependencies installation"
     php bin/console dependencies install
+
+    echo "🌐 Compiling locales"
+    php bin/console locales:compile
 
     echo "📁 Creating directories"
     bash -c 'mkdir -pv $GLPI_VAR_DIR/{_cron,_dumps,_graphs,_log,_lock,_pictures,_plugins,_rss,_tmp,_uploads,_cache,_sessions,_locales}'
