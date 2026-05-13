@@ -1,5 +1,6 @@
-[![logo](https://raw.githubusercontent.com/glpi-project/glpi/master/pics/logos/logo-GLPI-250-black.png)](https://github.com/glpi-project/glpi)
+[![logo](https://raw.githubusercontent.com/glpi-project/glpi/main/public/pics/logos/logo-GLPI-250-black.png)](https://github.com/glpi-project/glpi)
 
+[![Publish GLPI Images](https://github.com/LibreCodeCoop/glpi-docker/actions/workflows/publish-images.yml/badge.svg)](https://github.com/LibreCodeCoop/glpi-docker/actions/workflows/publish-images.yml)
 # GLPI in Docker
 Run GLPI in a Docker
 
