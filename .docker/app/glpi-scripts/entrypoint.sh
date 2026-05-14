@@ -2,6 +2,10 @@
 
 set -euo pipefail
 
+: "${GLPI_CONFIG_DIR:=/var/www/config}"
+: "${GLPI_VAR_DIR:=/var/www/var}"
+: "${EXTRA_COMMANDS:=}"
+
 # Set uid of host machine
 usermod --non-unique --uid "${HOST_UID}" www-data
 groupmod --non-unique --gid "${HOST_GID}" www-data

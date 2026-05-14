@@ -4,11 +4,11 @@ networks:
 
 services:
   app:
-    image: ghcr.io/librecodecoop/glpi-app:${VERSION_GLPI}
+    image: ghcr.io/librecodecoop/glpi-app:${VERSION_GLPI:-11.0.7}
     volumes:
       - ./volumes/glpi:/var/www/glpi
-      - ./volumes/var:${GLPI_VAR_DIR}
-      - ./volumes/config:${GLPI_CONFIG_DIR}
+      - ./volumes/var:${GLPI_VAR_DIR:-/var/www/var}
+      - ./volumes/config:${GLPI_CONFIG_DIR:-/var/www/config}
       - ~/.composer:/root/.composer/
       - ~/.npm:/root/.npm/
     restart: unless-stopped
@@ -17,9 +17,9 @@ services:
       - HOST_UID=${HOST_UID:-1000}
       - HOST_GID=${HOST_GID:-1000}
       - GLPI_VERSION
-      - GLPI_VAR_DIR
-      - GLPI_CONFIG_DIR
-      - EXTRA_COMMANDS
+      - GLPI_VAR_DIR=${GLPI_VAR_DIR:-/var/www/var}
+      - GLPI_CONFIG_DIR=${GLPI_CONFIG_DIR:-/var/www/config}
+      - EXTRA_COMMANDS=${EXTRA_COMMANDS:-}
       - MYSQL_HOST
       - MYSQL_DATABASE
       - MYSQL_USER
@@ -31,7 +31,7 @@ services:
       - internal-glpi
 
   web:
-    image: ghcr.io/librecodecoop/glpi-web:${VERSION_GLPI}
+    image: ghcr.io/librecodecoop/glpi-web:${VERSION_GLPI:-11.0.7}
     volumes:
       - ./volumes/glpi:/var/www/glpi
     networks:
@@ -39,7 +39,7 @@ services:
     restart: unless-stopped
 
   cron:
-    image: ghcr.io/librecodecoop/glpi-cron:${VERSION_GLPI}
+    image: ghcr.io/librecodecoop/glpi-cron:${VERSION_GLPI:-11.0.7}
     restart: unless-stopped
     networks:
       - internal-glpi
