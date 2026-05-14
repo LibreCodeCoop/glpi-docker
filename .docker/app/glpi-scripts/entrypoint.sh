@@ -35,9 +35,11 @@ run_glpi_console() {
 }
 
 write_downstream_config() {
+    mkdir -p "${GLPI_CONFIG_DIR}" "${GLPI_VAR_DIR}"
+
     cat > /var/www/glpi/inc/downstream.php <<EOF
 <?php
-define('GLPI_CONFIG_DIR', '${GLPI_CONFIG_DIR}/');
+defined('GLPI_CONFIG_DIR') || define('GLPI_CONFIG_DIR', '${GLPI_CONFIG_DIR}');
 if (file_exists(GLPI_CONFIG_DIR . '/local_define.php')) {
     require_once GLPI_CONFIG_DIR . '/local_define.php';
 }
@@ -77,12 +79,24 @@ abstract class AbstractCommand extends \Glpi\Console\AbstractCommand
 EOF
 }
 
+ensure_glpi_runtime_layout() {
+    echo "📁 Ensuring GLPI runtime directories"
+    bash -c 'mkdir -pv $GLPI_VAR_DIR/{_cron,_dumps,_graphs,_log,_lock,_pictures,_plugins,_rss,_tmp,_uploads,_cache,_sessions,_locales}'
+    bash -c 'mkdir -pv /var/www/glpi/marketplace'
+    write_downstream_config
+    patch_glpi_console_runtime
+    bash -c 'chown -R www-data:www-data {/var/www/glpi,$GLPI_CONFIG_DIR,$GLPI_VAR_DIR}'
+}
+
 if version_greater "$installed_version" "$image_version"; then
     echo "Can't start GLPI because the version of the data ($installed_version) is higher than the docker image version ($image_version) and downgrading is not supported. Are you sure you have pulled the newest image version?"
     exit 1
 fi
 
+needs_setup=false
+
 if version_greater "$image_version" "$installed_version"; then
+    needs_setup=true
     echo "⌛️ Initializing GLPI $image_version ..."
     if [ "$installed_version" != "0.0.0" ]; then
         echo "⌛️ Upgrading GLPI from $installed_version ..."
@@ -96,15 +110,11 @@ if version_greater "$image_version" "$installed_version"; then
     rsync $rsync_options /usr/src/glpi/ /var/www/glpi/
     chown -R www-data:www-data /var/www/glpi/
     echo "Initializing finished"
+fi
 
-    echo "📁 Creating directories"
-    bash -c 'mkdir -pv $GLPI_VAR_DIR/{_cron,_dumps,_graphs,_log,_lock,_pictures,_plugins,_rss,_tmp,_uploads,_cache,_sessions,_locales}'
-    bash -c 'mkdir -pv /var/www/glpi/marketplace'
-    write_downstream_config
-    patch_glpi_console_runtime
-    bash -c 'chown -R www-data:www-data /var/www/glpi'
-    bash -c 'chown -R www-data:www-data {/var/www/glpi,$GLPI_CONFIG_DIR,$GLPI_VAR_DIR}'
+ensure_glpi_runtime_layout
 
+if [ "$needs_setup" = true ]; then
     echo "Check requirements"
     run_glpi_console glpi:system:check_requirements
 
