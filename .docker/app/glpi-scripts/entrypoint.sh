@@ -143,7 +143,7 @@ if [ "$needs_setup" = true ]; then
         --db-password="$MYSQL_PASSWORD"
     )
     if should_force_db_install; then
-        install_args+=(--force)
+        install_args+=(--force --reconfigure)
     fi
     printf "Yes\n" | run_glpi_console "${install_args[@]}"
     if [ -n "$EXTRA_COMMANDS" ]; then
