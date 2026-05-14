@@ -61,11 +61,12 @@ WORKDIR /var/www/glpi
 
 COPY glpi-scripts /usr/src/glpi-scripts
 COPY config/* /usr/local/etc/php/conf.d/
+RUN chmod +x /usr/src/glpi-scripts/*.sh
 
 FROM base AS cron
-ENTRYPOINT ["sh", "/usr/src/glpi-scripts/cron.sh"]
+ENTRYPOINT ["/usr/src/glpi-scripts/cron.sh"]
 
 FROM base AS app
-ENTRYPOINT ["sh", "/usr/src/glpi-scripts/entrypoint.sh"]
+ENTRYPOINT ["/usr/src/glpi-scripts/entrypoint.sh"]
 
 CMD ["php-fpm"]
