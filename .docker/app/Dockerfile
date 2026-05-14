@@ -45,7 +45,10 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /usr/src/glpi
 RUN rm -rf .git \
-    && sed -i 's#\$WORKING_DIR/bin/console #$WORKING_DIR/bin/console --allow-superuser #g' tools/build_glpi.sh \
+    && sed -i 's#bin/console dependencies install#bin/console dependencies install --allow-superuser#' tools/build_glpi.sh \
+    && sed -i 's#bin/console tools:locales:compile#bin/console tools:locales:compile --allow-superuser#' tools/build_glpi.sh \
+    && sed -i 's#bin/console build:compile_scss#bin/console build:compile_scss --allow-superuser#' tools/build_glpi.sh \
+    && sed -i 's#bin/console build:generate_code_manifest -a crc32c#bin/console build:generate_code_manifest -a crc32c --allow-superuser#' tools/build_glpi.sh \
     && tools/build_glpi.sh
 
 # RUN apt-get update
