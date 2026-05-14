@@ -145,7 +145,7 @@ if [ "$needs_setup" = true ]; then
     if should_force_db_install; then
         install_args+=(--force --reconfigure)
     fi
-    printf "Yes\n" | run_glpi_console "${install_args[@]}"
+    run_glpi_console --no-interaction "${install_args[@]}"
     if [ -n "$EXTRA_COMMANDS" ]; then
         eval $EXTRA_COMMANDS
     fi
