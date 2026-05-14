@@ -17,6 +17,8 @@ If you need to sign your tickets with LibreSign, take a look at this [plugin](ht
 * Run command `docker-compose up`
 * Follow instructions to end setup in browser
 
+If the database already contains `glpi_*` tables and you want to recreate the installation, set `GLPI_DB_FORCE_INSTALL=1` before starting the `app` service. This makes the container run `bin/console db:install --force`.
+
 ### Install plugins and run extra commands
 
 Fill the environment `EXTRA_COMMANDS` with the command you want run on the first execution.

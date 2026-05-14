@@ -20,6 +20,7 @@ services:
       - GLPI_VAR_DIR=${GLPI_VAR_DIR:-/var/www/var}
       - GLPI_CONFIG_DIR=${GLPI_CONFIG_DIR:-/var/www/config}
       - EXTRA_COMMANDS=${EXTRA_COMMANDS:-}
+      - GLPI_DB_FORCE_INSTALL=${GLPI_DB_FORCE_INSTALL:-0}
       - MYSQL_HOST
       - MYSQL_DATABASE
       - MYSQL_USER

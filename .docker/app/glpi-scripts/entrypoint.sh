@@ -5,6 +5,7 @@ set -euo pipefail
 : "${GLPI_CONFIG_DIR:=/var/www/config}"
 : "${GLPI_VAR_DIR:=/var/www/var}"
 : "${EXTRA_COMMANDS:=}"
+: "${GLPI_DB_FORCE_INSTALL:=0}"
 
 # Set uid of host machine
 usermod --non-unique --uid "${HOST_UID}" www-data
@@ -36,6 +37,17 @@ version_greater() {
 
 run_glpi_console() {
     php bin/console --allow-superuser "$@"
+}
+
+should_force_db_install() {
+    case "${GLPI_DB_FORCE_INSTALL}" in
+        1|true|TRUE|yes|YES)
+            return 0
+            ;;
+        *)
+            return 1
+            ;;
+    esac
 }
 
 write_downstream_config() {
@@ -123,7 +135,17 @@ if [ "$needs_setup" = true ]; then
     run_glpi_console glpi:system:check_requirements
 
     echo "📊 Install database"
-    printf "Yes\n" | run_glpi_console db:install --db-host=$MYSQL_HOST --db-name=$MYSQL_DATABASE --db-user=$MYSQL_USER --db-password=$MYSQL_PASSWORD
+    install_args=(
+        db:install
+        --db-host="$MYSQL_HOST"
+        --db-name="$MYSQL_DATABASE"
+        --db-user="$MYSQL_USER"
+        --db-password="$MYSQL_PASSWORD"
+    )
+    if should_force_db_install; then
+        install_args+=(--force)
+    fi
+    printf "Yes\n" | run_glpi_console "${install_args[@]}"
     if [ -n "$EXTRA_COMMANDS" ]; then
         eval $EXTRA_COMMANDS
     fi
