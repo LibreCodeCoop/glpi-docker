@@ -52,9 +52,6 @@ if version_greater "$image_version" "$installed_version"; then
     chown -R www-data:www-data /var/www/glpi/
     echo "Initializing finished"
 
-    echo "🌐 Compiling locales"
-    run_glpi_console locales:compile
-
     echo "📁 Creating directories"
     bash -c 'mkdir -pv $GLPI_VAR_DIR/{_cron,_dumps,_graphs,_log,_lock,_pictures,_plugins,_rss,_tmp,_uploads,_cache,_sessions,_locales}'
     bash -c 'mkdir -pv /var/www/glpi/marketplace'
