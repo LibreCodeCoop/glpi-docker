@@ -45,29 +45,36 @@ EOF
 
     cat > "${GLPI_CONFIG_DIR}/local_define.php" <<EOF
 <?php
-define('GLPI_VAR_DIR', '${GLPI_VAR_DIR}');
-define('GLPI_DOC_DIR', GLPI_VAR_DIR);
-define('GLPI_CACHE_DIR', GLPI_VAR_DIR . '/_cache');
-define('GLPI_CRON_DIR', GLPI_VAR_DIR . '/_cron');
-define('GLPI_DUMP_DIR', GLPI_VAR_DIR . '/_dumps');
-define('GLPI_GRAPH_DIR', GLPI_VAR_DIR . '/_graphs');
-define('GLPI_LOCAL_I18N_DIR', GLPI_VAR_DIR . '/_locales');
-define('GLPI_LOCK_DIR', GLPI_VAR_DIR . '/_lock');
-define('GLPI_PICTURE_DIR', GLPI_VAR_DIR . '/_pictures');
-define('GLPI_PLUGIN_DOC_DIR', GLPI_VAR_DIR . '/_plugins');
-define('GLPI_RSS_DIR', GLPI_VAR_DIR . '/_rss');
-define('GLPI_SESSION_DIR', GLPI_VAR_DIR . '/_sessions');
-define('GLPI_TMP_DIR', GLPI_VAR_DIR . '/_tmp');
-define('GLPI_UPLOAD_DIR', GLPI_VAR_DIR . '/_uploads');
+defined('GLPI_VAR_DIR') || define('GLPI_VAR_DIR', '${GLPI_VAR_DIR}');
+defined('GLPI_DOC_DIR') || define('GLPI_DOC_DIR', GLPI_VAR_DIR);
+defined('GLPI_CACHE_DIR') || define('GLPI_CACHE_DIR', GLPI_VAR_DIR . '/_cache');
+defined('GLPI_CRON_DIR') || define('GLPI_CRON_DIR', GLPI_VAR_DIR . '/_cron');
+defined('GLPI_DUMP_DIR') || define('GLPI_DUMP_DIR', GLPI_VAR_DIR . '/_dumps');
+defined('GLPI_GRAPH_DIR') || define('GLPI_GRAPH_DIR', GLPI_VAR_DIR . '/_graphs');
+defined('GLPI_LOCAL_I18N_DIR') || define('GLPI_LOCAL_I18N_DIR', GLPI_VAR_DIR . '/_locales');
+defined('GLPI_LOCK_DIR') || define('GLPI_LOCK_DIR', GLPI_VAR_DIR . '/_lock');
+defined('GLPI_PICTURE_DIR') || define('GLPI_PICTURE_DIR', GLPI_VAR_DIR . '/_pictures');
+defined('GLPI_PLUGIN_DOC_DIR') || define('GLPI_PLUGIN_DOC_DIR', GLPI_VAR_DIR . '/_plugins');
+defined('GLPI_RSS_DIR') || define('GLPI_RSS_DIR', GLPI_VAR_DIR . '/_rss');
+defined('GLPI_SESSION_DIR') || define('GLPI_SESSION_DIR', GLPI_VAR_DIR . '/_sessions');
+defined('GLPI_TMP_DIR') || define('GLPI_TMP_DIR', GLPI_VAR_DIR . '/_tmp');
+defined('GLPI_UPLOAD_DIR') || define('GLPI_UPLOAD_DIR', GLPI_VAR_DIR . '/_uploads');
 EOF
 }
 
 patch_glpi_console_runtime() {
-    local locales_command="/var/www/glpi/tools/src/Command/LocalesCompileCommand.php"
+    local shim="/var/www/glpi/tools/src/Command/AbstractCommand.php"
 
-    if [ -f "$locales_command" ]; then
-        sed -i "s/final class LocalesCompileCommand extends AbstractCommand/final class LocalesCompileCommand extends \\\\Glpi\\\\Console\\\\AbstractCommand/" "$locales_command"
-    fi
+    mkdir -p "$(dirname "$shim")"
+    cat > "$shim" <<'EOF'
+<?php
+
+namespace Glpi\Tools\Command;
+
+abstract class AbstractCommand extends \Glpi\Console\AbstractCommand
+{
+}
+EOF
 }
 
 if version_greater "$installed_version" "$image_version"; then
