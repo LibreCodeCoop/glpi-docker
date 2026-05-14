@@ -45,6 +45,7 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /usr/src/glpi
 RUN rm -rf .git \
+    && sed -i 's#\$WORKING_DIR/bin/console #$WORKING_DIR/bin/console --allow-superuser #g' tools/build_glpi.sh \
     && tools/build_glpi.sh
 
 # RUN apt-get update
