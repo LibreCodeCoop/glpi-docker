@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euo pipefail
+
 # Set uid of host machine
 usermod --non-unique --uid "${HOST_UID}" www-data
 groupmod --non-unique --gid "${HOST_GID}" www-data
@@ -32,6 +34,42 @@ run_glpi_console() {
     php bin/console --allow-superuser "$@"
 }
 
+write_downstream_config() {
+    cat > /var/www/glpi/inc/downstream.php <<EOF
+<?php
+define('GLPI_CONFIG_DIR', '${GLPI_CONFIG_DIR}/');
+if (file_exists(GLPI_CONFIG_DIR . '/local_define.php')) {
+    require_once GLPI_CONFIG_DIR . '/local_define.php';
+}
+EOF
+
+    cat > "${GLPI_CONFIG_DIR}/local_define.php" <<EOF
+<?php
+define('GLPI_VAR_DIR', '${GLPI_VAR_DIR}');
+define('GLPI_DOC_DIR', GLPI_VAR_DIR);
+define('GLPI_CACHE_DIR', GLPI_VAR_DIR . '/_cache');
+define('GLPI_CRON_DIR', GLPI_VAR_DIR . '/_cron');
+define('GLPI_DUMP_DIR', GLPI_VAR_DIR . '/_dumps');
+define('GLPI_GRAPH_DIR', GLPI_VAR_DIR . '/_graphs');
+define('GLPI_LOCAL_I18N_DIR', GLPI_VAR_DIR . '/_locales');
+define('GLPI_LOCK_DIR', GLPI_VAR_DIR . '/_lock');
+define('GLPI_PICTURE_DIR', GLPI_VAR_DIR . '/_pictures');
+define('GLPI_PLUGIN_DOC_DIR', GLPI_VAR_DIR . '/_plugins');
+define('GLPI_RSS_DIR', GLPI_VAR_DIR . '/_rss');
+define('GLPI_SESSION_DIR', GLPI_VAR_DIR . '/_sessions');
+define('GLPI_TMP_DIR', GLPI_VAR_DIR . '/_tmp');
+define('GLPI_UPLOAD_DIR', GLPI_VAR_DIR . '/_uploads');
+EOF
+}
+
+patch_glpi_console_runtime() {
+    local locales_command="/var/www/glpi/tools/src/Command/LocalesCompileCommand.php"
+
+    if [ -f "$locales_command" ]; then
+        sed -i "s/final class LocalesCompileCommand extends AbstractCommand/final class LocalesCompileCommand extends \\\\Glpi\\\\Console\\\\AbstractCommand/" "$locales_command"
+    fi
+}
+
 if version_greater "$installed_version" "$image_version"; then
     echo "Can't start GLPI because the version of the data ($installed_version) is higher than the docker image version ($image_version) and downgrading is not supported. Are you sure you have pulled the newest image version?"
     exit 1
@@ -55,6 +93,8 @@ if version_greater "$image_version" "$installed_version"; then
     echo "📁 Creating directories"
     bash -c 'mkdir -pv $GLPI_VAR_DIR/{_cron,_dumps,_graphs,_log,_lock,_pictures,_plugins,_rss,_tmp,_uploads,_cache,_sessions,_locales}'
     bash -c 'mkdir -pv /var/www/glpi/marketplace'
+    write_downstream_config
+    patch_glpi_console_runtime
     bash -c 'chown -R www-data:www-data /var/www/glpi'
     bash -c 'chown -R www-data:www-data {/var/www/glpi,$GLPI_CONFIG_DIR,$GLPI_VAR_DIR}'
 
