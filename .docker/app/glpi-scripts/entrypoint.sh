@@ -20,7 +20,7 @@ resolve_glpi_version() {
     fi
 
     if [ -z "$version" ] && [ -f "${glpi_dir}/bin/console" ]; then
-        version=$(cd "$glpi_dir" && php bin/console --no-interaction --no-ansi --version 2>/dev/null | grep -oP '\d+(\.\d+)+' || true)
+        version=$(cd "$glpi_dir" && php bin/console --allow-superuser --no-interaction --no-ansi --version 2>/dev/null | grep -oP '\d+(\.\d+)+' || true)
     fi
 
     printf '%s\n' "$version"
