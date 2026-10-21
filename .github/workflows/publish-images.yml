@@ -1,6 +1,8 @@
 name: Publish GLPI Images
 
 on:
+  schedule:
+    - cron: '23 4 * * *'
   push:
     branches:
       - main
@@ -79,6 +81,7 @@ jobs:
           context: ${{ matrix.context }}
           file: ${{ matrix.file }}
           target: ${{ matrix.target }}
+          pull: true
           push: true
           provenance: mode=max
           cache-from: type=gha
@@ -94,6 +97,7 @@ jobs:
         with:
           context: ${{ matrix.context }}
           file: ${{ matrix.file }}
+          pull: true
           push: true
           provenance: mode=max
           cache-from: type=gha
@@ -132,6 +136,7 @@ jobs:
           context: .docker/app
           file: .docker/app/Dockerfile
           target: cron
+          pull: true
           push: true
           provenance: mode=max
           cache-from: type=gha

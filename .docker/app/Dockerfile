@@ -2,6 +2,11 @@ ARG version_php
 ARG version_glpi
 
 FROM php:${version_php}-fpm AS base
+
+# Stop builds before publication when upstream PHP still lacks the October 2026 RCE fixes.
+# CVE-2026-109618 / CVE-2026-109619; unsupported PHP branches fail closed.
+RUN php -r '$minimum = ["8.2" => "8.2.35", "8.3" => "8.3.36", "8.4" => "8.4.27", "8.5" => "8.5.12"]; $series = PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION; if (!isset($minimum[$series]) || version_compare(PHP_VERSION, $minimum[$series], "<")) { fwrite(STDERR, "Unpatched or unsupported PHP runtime: " . PHP_VERSION . PHP_EOL); exit(1); }'
+
 ARG version_glpi
 
 ENV VERSION_GLPI=${version_glpi}
