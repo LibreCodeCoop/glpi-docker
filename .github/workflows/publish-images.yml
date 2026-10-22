@@ -4,8 +4,6 @@ on:
   pull_request:
     branches:
       - main
-  schedule:
-    - cron: '23 4 * * *'
   push:
     branches:
       - main
@@ -25,7 +23,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       image_prefix: ${{ steps.vars.outputs.image_prefix }}
-      version_php: ${{ steps.vars.outputs.version_php }}
       version_glpi: ${{ steps.vars.outputs.version_glpi }}
     steps:
       - uses: actions/checkout@v4
@@ -34,11 +31,9 @@ jobs:
         shell: bash
         run: |
           owner="${GITHUB_REPOSITORY_OWNER,,}"
-          version_php="$(grep '^VERSION_PHP=' .env.example | cut -d '=' -f 2-)"
           version_glpi="$(grep '^VERSION_GLPI=' .env.example | cut -d '=' -f 2-)"
 
           echo "image_prefix=${{ env.REGISTRY }}/${owner}/glpi" >> "$GITHUB_OUTPUT"
-          echo "version_php=${version_php}" >> "$GITHUB_OUTPUT"
           echo "version_glpi=${version_glpi}" >> "$GITHUB_OUTPUT"
 
   publish-app-and-web:
@@ -93,7 +88,6 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ steps.meta.outputs.tags }}
           build-args: |
-            version_php=${{ needs.prepare.outputs.version_php }}
             version_glpi=${{ needs.prepare.outputs.version_glpi }}
 
       - if: matrix.service == 'web'
@@ -149,5 +143,4 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ steps.meta.outputs.tags }}
           build-args: |
-            version_php=${{ needs.prepare.outputs.version_php }}
             version_glpi=${{ needs.prepare.outputs.version_glpi }}
