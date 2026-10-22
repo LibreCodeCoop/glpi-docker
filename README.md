@@ -9,14 +9,6 @@ Quick and simple installation of GLPI using docker-compose
 ## Sign
 If you need to sign your tickets with LibreSign, take a look at this [plugin](https://github.com/LibreSign/libresign-glpi)
 
-## PHP base updates
-
-Renovate updates the default PHP image tag and digest in `.env.example`.
-The app and cron builds use that image, while `VERSION_GLPI` independently
-selects the GLPI release. For an alternative PHP version, pass
-`php_base_image` to the manual workflow or use `version_php` as a local
-Docker build argument.
-
 ## Setup
 
 * Clone this repository
