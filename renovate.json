@@ -4,6 +4,7 @@
     "custom.regex"
   ],
   "dependencyDashboard": false,
+  "separateMinorPatch": true,
   "customManagers": [
     {
       "customType": "regex",
@@ -11,12 +12,11 @@
         "/^\\.env\\.example$/"
       ],
       "matchStrings": [
-        "VERSION_PHP=(?<currentValue>\\d+\\.\\d+\\.\\d+)"
+        "PHP_BASE_IMAGE=php:(?<currentValue>\\d+\\.\\d+\\.\\d+-fpm)@(?<currentDigest>sha256:[a-f0-9]{64})"
       ],
       "datasourceTemplate": "docker",
       "depNameTemplate": "php",
-      "versioningTemplate": "semver-coerced",
-      "extractVersionTemplate": "^(?<version>\\d+\\.\\d+\\.\\d+)$"
+      "versioningTemplate": "docker"
     }
   ],
   "packageRules": [

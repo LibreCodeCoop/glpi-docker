@@ -10,6 +10,11 @@ on:
     tags:
       - 'v*'
   workflow_dispatch:
+    inputs:
+      php_base_image:
+        description: 'Override the official PHP base image for app and cron'
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -23,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       image_prefix: ${{ steps.vars.outputs.image_prefix }}
-      version_php: ${{ steps.vars.outputs.version_php }}
+      php_base_image: ${{ steps.vars.outputs.php_base_image }}
       version_glpi: ${{ steps.vars.outputs.version_glpi }}
     steps:
       - uses: actions/checkout@v4
@@ -31,14 +36,12 @@ jobs:
       - id: vars
         shell: bash
         run: |
-          # Keep version_php functional for both the app and cron images.
-          grep -Fqx 'FROM php:${version_php}-fpm AS base' .docker/app/Dockerfile
           owner="${GITHUB_REPOSITORY_OWNER,,}"
-          version_php="$(grep '^VERSION_PHP=' .env.example | cut -d '=' -f 2-)"
+          php_base_image="$(grep '^PHP_BASE_IMAGE=' .env.example | cut -d '=' -f 2-)"
           version_glpi="$(grep '^VERSION_GLPI=' .env.example | cut -d '=' -f 2-)"
 
           echo "image_prefix=${{ env.REGISTRY }}/${owner}/glpi" >> "$GITHUB_OUTPUT"
-          echo "version_php=${version_php}" >> "$GITHUB_OUTPUT"
+          echo "php_base_image=${php_base_image}" >> "$GITHUB_OUTPUT"
           echo "version_glpi=${version_glpi}" >> "$GITHUB_OUTPUT"
 
   publish-app-and-web:
@@ -93,7 +96,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ steps.meta.outputs.tags }}
           build-args: |
-            version_php=${{ needs.prepare.outputs.version_php }}
+            PHP_BASE_IMAGE=${{ inputs.php_base_image || needs.prepare.outputs.php_base_image }}
             version_glpi=${{ needs.prepare.outputs.version_glpi }}
 
       - if: matrix.service == 'web'
@@ -149,5 +152,5 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ steps.meta.outputs.tags }}
           build-args: |
-            version_php=${{ needs.prepare.outputs.version_php }}
+            PHP_BASE_IMAGE=${{ inputs.php_base_image || needs.prepare.outputs.php_base_image }}
             version_glpi=${{ needs.prepare.outputs.version_glpi }}
