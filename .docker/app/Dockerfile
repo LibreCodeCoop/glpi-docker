@@ -1,7 +1,9 @@
 ARG version_php
 ARG version_glpi
+ARG PHP_BASE_IMAGE=php:${version_php}-fpm
 
-FROM php:${version_php}-fpm AS base
+FROM ${PHP_BASE_IMAGE} AS base
+
 ARG version_glpi
 
 ENV VERSION_GLPI=${version_glpi}
